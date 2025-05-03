@@ -1,42 +1,10 @@
-const character_numerics = {};
-
-for (let i = 0; i < 26; i++) {
-    const lowercase = String.fromCharCode(97 + i);
-    const uppercase = String.fromCharCode(65 + i);
-    character_numerics[lowercase] = i;
-    character_numerics[uppercase] = i;
-}
-
-function getNumeric(char) {
-    return character_numerics[char];
-}
-
-function isCapital(char) {
-    return char.charCodeAt(0) >= 65 && char.charCodeAt(0) <= 90;
-}
-
-function getCharacter(number, isCapital) {
-    let char = Object.keys(character_numerics).find((char) => {
-        return character_numerics[char] === number;
-    });
-
-    if (isCapital) {
-        return String.fromCharCode(char.charCodeAt(0) - 32);
-    } else {
-        return char;
-    }
-}
-
 function shiftKey(key) {
     let keyLength = key.length;
 
     let newKey = "";
 
     for (let char of key) {
-        newKey += getCharacter(
-            (getNumeric(char) + keyLength) % 26,
-            isCapital(char)
-        );
+        newKey += String.fromCharCode((char.charCodeAt(0) + key.length) % 256);
     }
 
     return newKey;
@@ -58,26 +26,14 @@ function encryptMessage(plain_text, key) {
     let usableKey = "";
 
     for (let i = 0; i < plain_text.length; i++) {
-        if (plain_text.charAt(i) === " ") {
-            usableKey += " ";
-            continue;
-        }
         usableKey += referenceKey.charAt(i % referenceKey.length);
     }
 
     let encrypted = "";
 
     for (let i = 0; i < plain_text.length; i++) {
-        if (plain_text.charAt(i) === " ") {
-            encrypted += " ";
-            continue;
-        }
-
-        encrypted += getCharacter(
-            (getNumeric(plain_text.charAt(i)) +
-                getNumeric(usableKey.charAt(i))) %
-                26,
-            isCapital(plain_text.charAt(i))
+        encrypted += String.fromCharCode(
+            (plain_text.charCodeAt(i) + usableKey.charCodeAt(i)) % 256
         );
     }
 
@@ -93,25 +49,13 @@ function decryptMessage(encrypted_text, key) {
 
     let usableKey = "";
     for (let i = 0; i < rev_encrypted_text.length; i++) {
-        if (rev_encrypted_text.charAt(i) === " ") {
-            usableKey += " ";
-            continue;
-        }
         usableKey += referenceKey.charAt(i % referenceKey.length);
     }
 
     for (let i = 0; i < rev_encrypted_text.length; i++) {
-        if (rev_encrypted_text.charAt(i) === " ") {
-            decrypted += " ";
-            continue;
-        }
-
-        decrypted += getCharacter(
-            (getNumeric(rev_encrypted_text.charAt(i)) -
-                getNumeric(usableKey.charAt(i)) +
-                26) %
-                26,
-            isCapital(rev_encrypted_text.charAt(i))
+        decrypted += String.fromCharCode(
+            (rev_encrypted_text.charCodeAt(i) - usableKey.charCodeAt(i) + 256) %
+                256
         );
     }
 
