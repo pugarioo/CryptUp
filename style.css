@@ -45,6 +45,7 @@ label {
     text-align: left;
     margin: 10px 0 5px;
     width: 100%;
+    color: gray;
 }
 
 input[type="text"] {
